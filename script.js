@@ -58,7 +58,7 @@ function askPassword() {
   // Check the password against a predefined correct password
   if (password == "hope") {
     // If the password is correct, allow the user to download the file
-    window.open('https://drive.google.com/file/d/1rt6VUuALgTlyzrGrUd1tUX2-tRqQsR3V/view?usp=sharing');
+    window.open('https://drive.google.com/file/d/1Xk-AlmCkTN1d8NDxi9rvNu6Ge7sjB0el/view?usp=sharing');
   } else {
     // If the password is incorrect, display an error message
     alert("Incorrect password");
