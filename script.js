@@ -37,20 +37,6 @@ $(document).ready(function(){
 
 });
 
-
-// function checkPassword() {
-//     // Get the password entered by the user
-//     var password = document.forms[0].password.value;
-
-//     // Check the password against a predefined correct password
-//     if (password == "CV") {
-//       // If the password is correct, allow the user to download the file
-//       window.open('SusanCV.pdf');
-//     } else {
-//       // If the password is incorrect, display an error message
-//       alert("Incorrect password");
-//     }
-// }
 function askPassword() {
   // Ask the user for a password using the window.prompt() function
   var password = window.prompt("Enter Password: ");
