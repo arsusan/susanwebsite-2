@@ -4,19 +4,347 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Under Maintenance</title>
-    <link rel="stylesheet" href="styles/styles.css">
-    <link rel="icon" href="pictures/logo.png" type="image/png">
+    <title>Susan Aryal - Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+            from {
+                transform: scale(1);
+            }
+
+            to {
+                transform: scale(1.06);
+            }
+        }
+
+        #name-display {
+            animation: fadeIn 2s ease, pulse 2s infinite alternate;
+        }
+
+        .project-card {
+            transition: transform 0.5s ease, box-shadow 0.5s ease;
+            min-height: 400px;
+        }
+
+        @supports (height: 100dvh) {
+            .project-card {
+                height: 60dvh;
+                min-height: 400px;
+            }
+        }
+
+        .project-card:hover {
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 0 10px 60px -10px rgba(128, 0, 128, 0.3);
+        }
+
+        .project-image {
+            transition: transform 0.5s ease;
+        }
+
+        .project-card:hover .project-image {
+            transform: scale(1.1);
+        }
+
+        .overlay {
+            transition: opacity 0.5s ease;
+        }
+
+        .project-card:hover .overlay {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .project-card {
+                height: 400px;
+            }
+        }
+
+        /* Chat Animations */
+        .chat-enter {
+            animation: fadeIn 0.3s ease-out;
+        }
+    </style>
 </head>
 
-<body>
-    <div class="container">
-        <img src="pictures/logo.png" alt="Logo" class="logo" height="200px">
-        <h1>We'll Be Back Soon!</h1>
-        <p>Our website is currently undergoing maintenance. Please check back later.</p>
-        <div class="loader"></div>
+<body class="bg-gray-950 font-inter">
+    <!-- Chat Interface -->
+    <div class="fixed bottom-8 right-8 z-50">
+        <div id="chat-container" class="hidden w-80 bg-gray-900 rounded-xl shadow-2xl border border-purple-500/30">
+            <div class="p-4 border-b border-purple-500/30">
+                <h3 class="text-lg font-semibold text-purple-400">Susan's Assistant</h3>
+            </div>
+            <div id="chat-messages" class="h-64 overflow-y-auto p-4 space-y-3 bg-gray-900/80">
+                <div class="text-sm text-gray-300 p-3 rounded-lg bg-gray-800">
+                    Hi! Ask me about skills, experience, or contact information!
+                </div>
+            </div>
+            <div class="p-4 border-t border-purple-500/30">
+                <div class="flex gap-2">
+                    <input id="chat-input" type="text"
+                        class="flex-1 bg-gray-800 text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        placeholder="Type your question...">
+                    <button onclick="handleSendMessage()"
+                        class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                        Send
+                    </button>
+                </div>
+            </div>
+        </div>
+        <button onclick="toggleChat()"
+            class="mt-4 bg-purple-600 text-white p-4 rounded-full shadow-lg hover:bg-purple-700 transition-transform hover:scale-105">
+            💬
+        </button>
     </div>
-    <script src="static/script.js"></script>
+
+    <header class="bg-black/80 backdrop-blur-md py-4 border-b border-white/10 sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center">
+                <a href="#"
+                    class="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 text-transparent bg-clip-text"
+                    id="name-display">
+                    SUSAN ARYAL
+                </a>
+                <nav class="hidden md:block">
+                    <ul class="flex space-x-6">
+                        <li><a href="#home" class="text-gray-300 hover:text-white transition-colors">Home</a></li>
+                        <li><a href="#projects" class="text-gray-300 hover:text-white transition-colors">Projects</a>
+                        </li>
+                        <li><a href="#about" class="text-gray-300 hover:text-white transition-colors">About</a></li>
+                    </ul>
+                </nav>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-gray-300 hover:text-white focus:outline-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                    <div id="mobile-menu"
+                        class="hidden absolute top-16 right-0 bg-gray-900 shadow-lg rounded-md border border-white/10 py-2 px-4 space-y-3">
+                        <a href="#home" class="block text-gray-300 hover:text-white">Home</a>
+                        <a href="#projects" class="block text-gray-300 hover:text-white">Projects</a>
+                        <a href="#about" class="block text-gray-300 hover:text-white">About</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="home"
+            class="relative flex flex-col items-center justify-center py-20 md:py-32 lg:py-40 bg-gradient-to-br from-black to-gray-900 overflow-hidden">
+            <div class="container mx-auto px-4 text-center relative z-10">
+                <h1
+                    class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 text-transparent bg-clip-text drop-shadow-lg mb-8">
+                    Hi, I'm Susan Aryal
+                </h1>
+                <p class="text-gray-300 text-lg sm:text-xl md:text-2xl max-w-3xl mx-auto mb-12">
+                    Data Scientist & Specialist
+                </p>
+                <a href="#projects"
+                    class="bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-white border border-purple-500/30 hover:border-purple-500/50 shadow-lg hover:shadow-purple-500/20 transition-all duration-300 px-8 py-3 rounded-full text-lg inline-block">
+                    Explore My Work
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 ml-3">
+                        <path d="M3 7v11a2 2 0 0 0 2 2h14a2 0 0 0 2-2V7"></path>
+                        <polyline points="7.5 2.5 12 7 16.5 2.5"></polyline>
+                        <line x1="12" y1="7" x2="12" y2="15"></line>
+                    </svg>
+                </a>
+            </div>
+        </section>
+
+        <section id="about" class="py-20 bg-gray-950">
+            <div class="container mx-auto px-4">
+                <h2 class="text-4xl font-semibold text-white mb-12 text-center">About Me</h2>
+                <div
+                    class="bg-white/5 backdrop-blur-md rounded-xl p-6 shadow-lg border border-white/10 text-gray-300 text-lg">
+                    <p class="mb-4">
+                        I am a driven Computer Science professional with 3+ years of experience in artificial
+                        intelligence and data science,
+                        with a strong command of C, C++, and Python. My expertise lies in developing intelligent
+                        systems, training machine
+                        learning models, and exploring advanced concepts in generative AI, deep learning, and
+                        statistical analysis.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                        <div>
+                            <h3 class="text-purple-400 text-xl mb-3">Technical Expertise</h3>
+                            <ul class="space-y-2">
+                                <li>• Machine Learning & Deep Learning</li>
+                                <li>• Web Development (Django/Flask)</li>
+                                <li>• Data Analysis & Visualization</li>
+                                <li>• Cloud Computing Basics</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-purple-400 text-xl mb-3">Contact Information</h3>
+                            <ul class="space-y-2">
+                                <li>📧 susanaryal089@gmail.com</li>
+                                <li>🌐 susanaryal.com.np</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects" class="py-20 bg-gray-950">
+            <div class="container mx-auto px-4">
+                <h2 class="text-4xl font-semibold text-white mb-12 text-center">Featured Projects</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div
+                        class="project-card group relative rounded-xl overflow-hidden bg-white/5 border border-white/10 shadow-2xl">
+                        <div class="absolute inset-0">
+                            <img src="https://picsum.photos/800/600?random=1" alt="AI Project" class="project-image">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent overlay"></div>
+                        </div>
+                        <div class="absolute bottom-0 left-0 right-0 p-6 project-content">
+                            <h3
+                                class="text-2xl font-semibold text-white transition-colors duration-300 group-hover:text-purple-400">
+                                AI Research Platform</h3>
+                            <p class="text-gray-300 text-sm line-clamp-2">Machine learning platform for predictive
+                                analytics and pattern recognition.</p>
+                            <div class="mt-4 flex flex-wrap gap-2">
+                                <span
+                                    class="bg-purple-500/20 text-purple-300 px-2 py-1 rounded-full text-xs">Python</span>
+                                <span
+                                    class="bg-purple-500/20 text-purple-300 px-2 py-1 rounded-full text-xs">TensorFlow</span>
+                                <span
+                                    class="bg-purple-500/20 text-purple-300 px-2 py-1 rounded-full text-xs">AI/ML</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="project-card group relative rounded-xl overflow-hidden bg-white/5 border border-white/10 shadow-2xl">
+                        <div class="absolute inset-0">
+                            <img src="https://picsum.photos/800/600?random=2" alt="Web Project" class="project-image">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent overlay"></div>
+                        </div>
+                        <div class="absolute bottom-0 left-0 right-0 p-6 project-content">
+                            <h3
+                                class="text-2xl font-semibold text-white transition-colors duration-300 group-hover:text-purple-400">
+                                E-commerce Solution</h3>
+                            <p class="text-gray-300 text-sm line-clamp-2">Full-stack e-commerce platform with real-time
+                                analytics.</p>
+                            <div class="mt-4 flex flex-wrap gap-2">
+                                <span
+                                    class="bg-purple-500/20 text-purple-300 px-2 py-1 rounded-full text-xs">Django</span>
+                                <span
+                                    class="bg-purple-500/20 text-purple-300 px-2 py-1 rounded-full text-xs">React</span>
+                                <span
+                                    class="bg-purple-500/20 text-purple-300 px-2 py-1 rounded-full text-xs">PostgreSQL</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-black/80 backdrop-blur-md py-6 border-t border-white/10">
+        <div class="container mx-auto px-4 text-center text-gray-400">
+            <p>&copy; 2024 Susan Aryal. All rights reserved.</p>
+            <div class="mt-4 flex justify-center gap-6">
+                <a href="https://www.linkedin.com/in/susan-aryal-4665681b8/" target="_blank"
+                    class="hover:text-purple-400 transition-colors">
+                    LinkedIn
+                </a>
+                <a href="https://github.com/arsusan" target="_blank" class="hover:text-purple-400 transition-colors">
+                    GitHub
+                </a>
+                <a href="mailto:susanaryal089@gmail.com" class="hover:text-purple-400 transition-colors">
+                    Email
+                </a>
+            </div>
+            <!-- <p class="mt-4">Contact: susanaryal.com.np</p> -->
+        </div>
+    </footer>
+
+    <script>
+        // Chat Functionality
+        const chatData = {
+            skills: ["C", "Python", "Java", "JavaScript", "Django", "Machine Learning", "AI"],
+            contact: {
+                email: "susanaryal089@gmail.com",
+                phone: "+977 9741734263",
+                website: "susanaryal.com.np",
+                linkedin: "https://www.linkedin.com/in/susan-aryal-4665681b8/"
+            },
+            experience: "3+ years in data science and AI development",
+            certifications: ["Coming Soon!"]
+        };
+
+        function toggleChat() {
+            const chat = document.getElementById('chat-container');
+            chat.classList.toggle('hidden');
+        }
+
+        function createMessage(text, isUser = false) {
+            const div = document.createElement('div');
+            div.className = `text-sm p-3 rounded-lg max-w-[85%] mb-2 ${isUser ? 'ml-auto bg-purple-600 text-white' : 'bg-gray-800 text-gray-300'
+                }`;
+            div.textContent = text;
+            return div;
+        }
+
+        function handleSendMessage() {
+            const input = document.getElementById('chat-input');
+            const messages = document.getElementById('chat-messages');
+            const question = input.value.toLowerCase();
+
+            if (!question.trim()) return;
+
+            messages.appendChild(createMessage(input.value, true));
+
+            let response = "I can help with: skills, experience, contact info, certifications. Ask away!";
+            if (question.includes('skill')) response = `Skills: ${chatData.skills.join(', ')}`;
+            if (question.includes('contact')) response = `Contact:\nEmail: ${chatData.contact.email}\nPhone: ${chatData.contact.phone}\nWebsite: ${chatData.contact.website}`;
+            if (question.includes('experience')) response = chatData.experience;
+            if (question.includes('linkedin')) response = `LinkedIn: ${chatData.contact.linkedin}`;
+            if (question.includes('certif')) response = `Certifications: ${chatData.certifications.join(', ')}`;
+
+            messages.appendChild(createMessage(response));
+            input.value = '';
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        // Mobile Menu
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+
+        // Smooth Scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Enter Key for Chat
+        document.getElementById('chat-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleSendMessage();
+        });
+    </script>
 </body>
 
 </html>
