@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Reading Notes</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom CSS for the paper theme */
+        body {
+            font-family: 'Inter', sans-serif; /* Default font */
+            background-color: #f0e6d6; /* A warm, light background for the overall page */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .paper-container {
+            background-image: url('https://placehold.co/1000x800/dcc3a6/333?text=Paper+Texture'); /* Placeholder for paper texture */
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15), 0 6px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 10;
+            overflow: hidden; /* Ensure content stays within rounded corners */
+            display: flex;
+            flex-direction: column; /* Stacks header, main, and footer */
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        /* Before/After pseudo-elements for a subtle page curl/shadow effect */
+        .paper-container::before,
+        .paper-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 50%;
+            pointer-events: none;
+            z-index: -1; /* Behind the main content */
+            background-size: 100% 100%;
+        }
+
+        .paper-container::before {
+            left: -10px; /* Adjust to move the shadow/curl */
+            transform: skewY(1deg); /* Slight skew for a paper edge effect */
+            box-shadow: -10px 0 15px rgba(0, 0, 0, 0.1); /* Left shadow */
+            border-radius: 12px;
+        }
+
+        .paper-container::after {
+            right: -10px; /* Adjust to move the shadow/curl */
+            transform: skewY(-1deg); /* Slight skew for a paper edge effect */
+            box-shadow: 10px 0 15px rgba(0, 0, 0, 0.1); /* Right shadow */
+            border-radius: 12px;
+        }
+
+        .header-bg {
+            background-color: rgba(220, 195, 166, 0.8); /* Slightly darker paper tone for header */
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            padding: 1.5rem 2rem;
+            box-shadow: inset 0 -2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+        }
+
+        .main-content {
+            display: flex;
+            flex-grow: 1; /* Allows main content to take available space */
+        }
+
+        .sidebar {
+            background-color: rgba(240, 230, 214, 0.85); /* Lighter paper tone for sidebar */
+            border-right: 1px solid rgba(0, 0, 0, 0.08);
+            padding: 2rem;
+            min-width: 250px;
+            max-width: 300px;
+            width: 30%; /* Responsive width */
+            overflow-y: auto; /* Scroll for many topics */
+            box-shadow: inset -3px 0 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .note-display {
+            background-color: rgba(255, 255, 255, 0.9); /* Almost white for the main note area */
+            padding: 2.5rem 3rem;
+            flex-grow: 1;
+            overflow-y: auto; /* Scroll for long notes */
+            font-family: 'Playfair Display', serif; /* Serif font for main content */
+            line-height: 1.8;
+            color: #333;
+        }
+
+        .note-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #4a3a2e; /* Darker tone for titles */
+            border-bottom: 2px dashed rgba(74, 58, 46, 0.3);
+            padding-bottom: 0.75rem;
+        }
+
+        .note-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 1.5rem 0;
+            display: block; /* Ensures it takes full width and centers */
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .note-image-caption {
+            font-style: italic;
+            text-align: center;
+            color: #666;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .note-text {
+            font-size: 1.1rem;
+            margin-top: 2rem;
+            text-align: justify;
+        }
+
+        .topic-item {
+            padding: 0.75rem 0.5rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            color: #4a3a2e;
+        }
+
+        .topic-item:hover {
+            background-color: rgba(220, 195, 166, 0.4);
+            transform: translateX(5px);
+        }
+
+        .topic-item.active {
+            background-color: rgba(220, 195, 166, 0.6);
+            font-weight: 600;
+            border-left: 4px solid #8d6e63;
+            padding-left: calc(0.75rem - 4px);
+        }
+
+        .topic-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .topic-description {
+            font-size: 0.85rem;
+            color: #777;
+            line-height: 1.4;
+        }
+
+        .footer-bg {
+            background-color: rgba(220, 195, 166, 0.8);
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+            padding: 1rem 2rem;
+            text-align: center;
+            color: #4a3a2e;
+            font-size: 0.9rem;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Modal for adding new notes */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 100; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.6); /* Black w/ opacity */
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+        }
+
+        .close-button {
+            color: #aaa;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #4a3a2e;
+        }
+
+        .form-group input[type="text"],
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box; /* Include padding in width */
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .form-group button {
+            background-color: #8d6e63;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.2s ease;
+        }
+
+        .form-group button:hover {
+            background-color: #6a4e42;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            .paper-container {
+                flex-direction: column;
+                border-radius: 8px;
+                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            }
+            .paper-container::before,
+            .paper-container::after {
+                display: none; /* Hide complex shadows on small screens */
+            }
+            .header-bg, .footer-bg {
+                border-radius: 8px;
+            }
+            .header-bg {
+                padding: 1rem;
+                justify-content: center; /* Center items on small screens */
+            }
+            .header-bg h1 {
+                font-size: 1.8rem;
+                text-align: center;
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+            .header-bg button {
+                margin-top: 1rem;
+            }
+            .main-content {
+                flex-direction: column;
+            }
+            .sidebar {
+                border-right: none;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+                width: 100%;
+                max-width: none;
+                padding: 1.5rem;
+                min-height: 150px; /* Give some height for scrolling */
+            }
+            .note-display {
+                padding: 2rem 1.5rem;
+            }
+            .note-title {
+                font-size: 2rem;
+            }
+            .note-text {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 antialiased">
+    <div class="paper-container">
+        <!-- Header -->
+        <header class="header-bg">
+            <h1 class="text-4xl font-extrabold text-[#4a3a2e] tracking-tight font-['Playfair_Display']">My Reading Insights</h1>
+            <button id="addNoteBtn" class="bg-[#8d6e63] text-white px-6 py-2 rounded-lg shadow-md hover:bg-[#6a4e42] transition duration-300 ease-in-out transform hover:scale-105">
+                + Add New Note
+            </button>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="main-content flex-grow">
+            <!-- Sidebar for Topics -->
+            <aside class="sidebar">
+                <h2 class="text-2xl font-bold text-[#4a3a2e] mb-6 font-['Playfair_Display']">Topics</h2>
+                <div id="topicList" class="space-y-4">
+                    <!-- Topics will be loaded here by JavaScript -->
+                    <p class="text-sm text-gray-500">Loading notes...</p>
+                </div>
+            </aside>
+
+            <!-- Main Note Display Area -->
+            <section class="note-display">
+                <h2 id="noteTitle" class="note-title">Welcome to My Reading Notes!</h2>
+                <figure id="noteImageContainer" class="hidden">
+                    <img id="noteImage" class="note-image" src="" alt="Note related image">
+                    <figcaption id="noteImageCaption" class="note-image-caption"></figcaption>
+                </figure>
+                <div id="noteText" class="note-text">
+                    <p>This is your personal space to capture insights, key takeaways, and reflections from the books and articles you read. To get started, click on any topic from the left sidebar to view its content.</p>
+                    <p>You can use the "Add New Note" button to create your own entries. Each note can have a title, an image with a description, and detailed text.</p>
+                    <p>Enjoy documenting your journey through knowledge!</p>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer-bg">
+            <p>&copy; 2025 My Reading Notes. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Modal for Adding New Note -->
+    <div id="addNoteModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2 class="text-2xl font-bold text-[#4a3a2e] mb-6 font-['Playfair_Display']">Add New Reading Note</h2>
+            <form id="newNoteForm">
+                <div class="form-group mb-4">
+                    <label for="newNoteTitle">Note Title:</label>
+                    <input type="text" id="newNoteTitle" name="title" required class="border p-2 rounded w-full">
+                </div>
+                <div class="form-group mb-4">
+                    <label for="newNoteImageURL">Image URL (Optional):</label>
+                    <input type="text" id="newNoteImageURL" name="image" class="border p-2 rounded w-full" placeholder="e.g., https://placehold.co/600x400">
+                </div>
+                <div class="form-group mb-4">
+                    <label for="newNoteImageCaption">Image Caption (Optional):</label>
+                    <input type="text" id="newNoteImageCaption" name="caption" class="border p-2 rounded w-full" placeholder="Describe your image">
+                </div>
+                <div class="form-group mb-4">
+                    <label for="newNoteText">Note Content:</label>
+                    <textarea id="newNoteText" name="text" rows="8" required class="border p-2 rounded w-full"></textarea>
+                </div>
+                <button type="submit" class="bg-[#8d6e63] text-white px-6 py-2 rounded-lg shadow-md hover:bg-[#6a4e42] transition duration-300 ease-in-out">
+                    Save Note
+                </button>
+            </form>
+            <div id="messageBox" class="mt-4 p-3 rounded text-center hidden"></div>
+        </div>
+    </div>
+
+
+    <script>
+        // Data structure for notes
+        let notesData = [
+            {
+                id: 'note-1',
+                title: 'The Alchemist: Following Your Personal Legend',
+                description: 'Reflections on pursuing dreams and listening to the universe.',
+                image: 'https://placehold.co/600x400/8d6e63/ffffff?text=Alchemist+Book',
+                caption: 'The journey of Santiago, the shepherd boy.',
+                text: `Paulo Coelho's "The Alchemist" is a profound allegorical novel about a young Andalusian shepherd named Santiago who journeys to the Egyptian desert in search of a treasure. What he finds along the way is far more valuable than gold: a deeper understanding of himself, the universe, and his "Personal Legend."
+                       <br><br>The book emphasizes the importance of following one's dreams and listening to one's heart. It suggests that the universe conspires to help you achieve your goals once you commit to them. The idea of "omens" and trusting your intuition is central to Santiago's journey, guiding him through challenges and towards his destiny.
+                       <br><br>One key takeaway is that the treasure often lies not just at the destination, but in the experiences and wisdom gained during the journey itself. The encounters with the King of Salem, the crystal merchant, and the alchemist all serve to teach Santiago valuable lessons about perseverance, faith, and the interconnectedness of all things. It's a beautiful reminder to embrace the process and find joy in the pursuit of what truly matters.`
+            },
+            {
+                id: 'note-2',
+                title: 'Atomic Habits: The Power of Small Changes',
+                description: 'Insights into building good habits and breaking bad ones.',
+                image: 'https://placehold.co/600x400/6b8e23/ffffff?text=Atomic+Habits',
+                caption: 'Tiny changes, remarkable results.',
+                text: `James Clear's "Atomic Habits" provides a practical, actionable framework for improving every day. The core idea is that significant results come from the compounding effect of hundreds of small improvements, or "atomic habits." It debunks the myth of needing massive willpower and instead focuses on system design.
+                       <br><br>Clear introduces the Four Laws of Behavior Change: make it obvious, make it attractive, make it easy, and make it satisfying. By applying these laws, you can engineer your environment to make good habits inevitable and bad habits impossible. For instance, to make reading a habit, make the book obvious by placing it on your pillow, make it attractive by pairing it with a cozy tea, make it easy by starting with just one page, and make it satisfying by tracking your progress.
+                       <br><br>The book stresses that identity-based habits are more powerful than outcome-based habits. Instead of saying "I want to run a marathon" (outcome), say "I am a runner" (identity). When you align your actions with your desired identity, habit formation becomes a natural extension of who you are. This shift in mindset is crucial for long-term change.`
+            },
+            {
+                id: 'note-3',
+                title: 'Sapiens: A Brief History of Humankind',
+                description: 'A fascinating overview of human history and evolution.',
+                image: 'https://placehold.co/600x400/87ceeb/ffffff?text=Sapiens+Book',
+                caption: 'From ancient times to the modern era.',
+                text: `Yuval Noah Harari's "Sapiens" is an ambitious and thought-provoking exploration of the entire history of humankind, from the emergence of Homo sapiens in the Stone Age to the political and technological revolutions of the 21st century. Harari weaves together insights from biology, anthropology, paleontology, and economics to tell a compelling story of how we came to dominate the planet.
+                       <br><br>A central theme is the concept of "fictions" or "imagined realities" that humans create, such as nations, religions, money, and corporations. These shared myths, Harari argues, are what enable large groups of strangers to cooperate effectively, giving Sapiens a distinct advantage over other species. The Cognitive Revolution, Agricultural Revolution, and Scientific Revolution are presented as pivotal shifts driven by these collective fictions.
+                       <br><br>The book challenges many conventional assumptions about progress and happiness, questioning whether humanity has truly become happier or more fulfilled despite its technological advancements. It provides a grand narrative that forces readers to reconsider their understanding of human nature, society, and the future.`
+            }
+        ];
+
+        // Get DOM elements
+        const topicList = document.getElementById('topicList');
+        const noteTitle = document.getElementById('noteTitle');
+        const noteImageContainer = document.getElementById('noteImageContainer');
+        const noteImage = document.getElementById('noteImage');
+        const noteImageCaption = document.getElementById('noteImageCaption');
+        const noteText = document.getElementById('noteText');
+        const addNoteBtn = document.getElementById('addNoteBtn');
+        const addNoteModal = document.getElementById('addNoteModal');
+        const closeButton = document.querySelector('.close-button');
+        const newNoteForm = document.getElementById('newNoteForm');
+        const messageBox = document.getElementById('messageBox');
+
+        // Function to display message box
+        function showMessageBox(message, type = 'info') {
+            messageBox.textContent = message;
+            messageBox.className = 'mt-4 p-3 rounded text-center'; // Reset classes
+            if (type === 'success') {
+                messageBox.classList.add('bg-green-100', 'text-green-700');
+            } else if (type === 'error') {
+                messageBox.classList.add('bg-red-100', 'text-red-700');
+            } else { // info or default
+                messageBox.classList.add('bg-blue-100', 'text-blue-700');
+            }
+            messageBox.classList.remove('hidden');
+            setTimeout(() => {
+                messageBox.classList.add('hidden');
+            }, 3000); // Hide after 3 seconds
+        }
+
+        // Function to render topics in the sidebar
+        function renderTopicList() {
+            topicList.innerHTML = ''; // Clear existing list
+            if (notesData.length === 0) {
+                topicList.innerHTML = '<p class="text-gray-500 text-sm">No notes available. Add your first note!</p>';
+                return;
+            }
+
+            notesData.forEach(note => {
+                const topicItem = document.createElement('div');
+                topicItem.className = 'topic-item';
+                topicItem.dataset.id = note.id; // Store the note ID
+
+                topicItem.innerHTML = `
+                    <div class="topic-title">${note.title}</div>
+                    <div class="topic-description">${note.description}</div>
+                `;
+                topicList.appendChild(topicItem);
+
+                topicItem.addEventListener('click', () => {
+                    displayNote(note.id);
+                });
+            });
+            // Automatically display the first note if available
+            if (notesData.length > 0) {
+                displayNote(notesData[0].id);
+            }
+        }
+
+        // Function to display a specific note
+        function displayNote(id) {
+            const note = notesData.find(n => n.id === id);
+            if (note) {
+                noteTitle.textContent = note.title;
+                noteText.innerHTML = note.text; // Use innerHTML for text with line breaks
+
+                if (note.image) {
+                    noteImage.src = note.image;
+                    noteImage.alt = note.title;
+                    noteImageContainer.classList.remove('hidden');
+                } else {
+                    noteImageContainer.classList.add('hidden');
+                }
+
+                if (note.caption) {
+                    noteImageCaption.textContent = note.caption;
+                    noteImageCaption.classList.remove('hidden');
+                } else {
+                    noteImageCaption.classList.add('hidden');
+                }
+
+                // Update active state in sidebar
+                document.querySelectorAll('.topic-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                document.querySelector(`.topic-item[data-id="${id}"]`).classList.add('active');
+            }
+        }
+
+        // Event listener for "Add New Note" button
+        addNoteBtn.addEventListener('click', () => {
+            addNoteModal.style.display = 'flex'; // Show modal
+            // Clear form fields
+            newNoteForm.reset();
+            messageBox.classList.add('hidden');
+        });
+
+        // Event listener for close button on modal
+        closeButton.addEventListener('click', () => {
+            addNoteModal.style.display = 'none'; // Hide modal
+        });
+
+        // Close modal when clicking outside of it
+        window.addEventListener('click', (event) => {
+            if (event.target == addNoteModal) {
+                addNoteModal.style.display = 'none';
+            }
+        });
+
+        // Event listener for new note form submission
+        newNoteForm.addEventListener('submit', (event) => {
+            event.preventDefault(); // Prevent default form submission
+
+            const title = document.getElementById('newNoteTitle').value.trim();
+            const imageURL = document.getElementById('newNoteImageURL').value.trim();
+            const imageCaption = document.getElementById('newNoteImageCaption').value.trim();
+            const text = document.getElementById('newNoteText').value.trim();
+
+            if (!title || !text) {
+                showMessageBox('Title and content are required!', 'error');
+                return;
+            }
+
+            const newNote = {
+                id: 'note-' + (notesData.length + 1), // Simple ID generation
+                title: title,
+                description: text.substring(0, 100) + (text.length > 100 ? '...' : ''), // Take first 100 chars as description
+                image: imageURL,
+                caption: imageCaption,
+                text: text.replace(/\n/g, '<br>') // Replace newlines with <br> for HTML display
+            };
+
+            notesData.push(newNote); // Add new note to the data array
+            renderTopicList(); // Re-render the topic list
+            displayNote(newNote.id); // Display the newly added note
+            addNoteModal.style.display = 'none'; // Hide modal
+            showMessageBox('Note added successfully!', 'success');
+        });
+
+        // Initial render when page loads
+        document.addEventListener('DOMContentLoaded', renderTopicList);
+    </script>
+</body>
+</html>
